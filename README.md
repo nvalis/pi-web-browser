@@ -14,16 +14,18 @@ Set `PI_BROWSER_PREVENT_AUTO_LAUNCH=1` to disable automatic startup. On native L
 
 ## Installation
 
-Install the tagged private GitHub package with an authenticated GitHub SSH setup:
+Install the private GitHub package over SSH.
+Without a ref, Pi installs the repository's default branch.
+Configure a GitHub SSH key first, then verify it with `ssh -T git@github.com`.
 
 ```sh
-pi install git:github.com/nvalis/pi-web-browser@v2.4.0
+pi install ssh://git@github.com/nvalis/pi-web-browser
 ```
 
 To try it for one Pi invocation without adding it to settings:
 
 ```sh
-pi -e git:github.com/nvalis/pi-web-browser@v2.4.0
+pi -e ssh://git@github.com/nvalis/pi-web-browser
 ```
 
 Run `/reload` after changing an already loaded installation. Pi installs the runtime dependencies declared in `package.json` automatically.
