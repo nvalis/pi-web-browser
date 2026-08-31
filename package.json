@@ -1,0 +1,51 @@
+{
+  "name": "pi-web-browser",
+  "version": "2.4.0",
+  "private": true,
+  "description": "Puppeteer/CDP browser tools for the Pi coding agent",
+  "type": "module",
+  "keywords": [
+    "pi-package",
+    "pi-extension",
+    "browser",
+    "puppeteer"
+  ],
+  "files": [
+    "index.ts",
+    "src",
+    "docs",
+    "README.md",
+    "launch-chrome.bat"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/nvalis/pi-web-browser.git"
+  },
+  "homepage": "https://github.com/nvalis/pi-web-browser#readme",
+  "bugs": {
+    "url": "https://github.com/nvalis/pi-web-browser/issues"
+  },
+  "dependencies": {
+    "puppeteer": "^25.9.0"
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*",
+    "typebox": "*"
+  },
+  "devDependencies": {
+    "@earendil-works/pi-coding-agent": "^0.84.3",
+    "@types/node": "^22.0.0",
+    "typebox": "^1.0.64",
+    "typescript": "^5.8.0"
+  },
+  "scripts": {
+    "test": "node --experimental-strip-types --test test/*.test.ts",
+    "typecheck": "tsc -p tsconfig.json",
+    "check": "npm run test && npm run typecheck"
+  },
+  "pi": {
+    "extensions": [
+      "./index.ts"
+    ]
+  }
+}
