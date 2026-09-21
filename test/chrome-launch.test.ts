@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { delimiter, join } from "node:path";
 import test from "node:test";
 import {
+  browserConnectOptions,
   executableOnPath,
   nativeLinuxChromeArguments,
   selectAutoLaunchMode,
@@ -30,10 +31,19 @@ test("Linux Chrome discovery searches PATH and requires an executable file", asy
   }
 });
 
-test("native Linux Chrome receives a dedicated profile and local debugger endpoint", () => {
+test("native Linux Chrome receives a dedicated profile and opens maximized", () => {
   const args = nativeLinuxChromeArguments("9333", "/tmp/pi-browser-profile");
   assert.ok(args.includes("--remote-debugging-port=9333"));
   assert.ok(args.includes("--remote-debugging-address=127.0.0.1"));
   assert.ok(args.includes("--user-data-dir=/tmp/pi-browser-profile"));
+  assert.ok(args.includes("--start-maximized"));
+  assert.ok(!args.some((argument) => argument.startsWith("--window-size=")));
   assert.equal(args.at(-1), "about:blank");
+});
+
+test("Puppeteer connection preserves Chrome's native viewport", () => {
+  assert.deepEqual(browserConnectOptions("ws://localhost/devtools/browser/test"), {
+    browserWSEndpoint: "ws://localhost/devtools/browser/test",
+    defaultViewport: null,
+  });
 });

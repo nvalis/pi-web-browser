@@ -8,7 +8,7 @@ On first browser-tool use, the extension probes the configured Chrome debugger e
 - **Native Linux:** discovers `google-chrome`, `google-chrome-stable`, `chromium`, or `chromium-browser` on `PATH` and spawns it detached with a dedicated profile.
 - **Other platforms:** reports how to start Chrome manually with the remote-debugging flag.
 
-Both automatic launchers wait up to 15 seconds for CDP. The visible window allows the user to complete CAPTCHAs when needed. `launch-chrome.bat` remains available as a WSL/Windows manual fallback.
+Both automatic launchers wait up to 15 seconds for CDP and open Chrome maximized. Puppeteer preserves Chrome's native viewport so pages fill the available browser window instead of rendering in its default 800×600 emulation area. The visible window allows the user to complete CAPTCHAs when needed. `launch-chrome.bat` remains available as a WSL/Windows manual fallback.
 
 Set `PI_BROWSER_PREVENT_AUTO_LAUNCH=1` to disable automatic startup. On native Linux, `PI_BROWSER_CHROME_EXECUTABLE` overrides executable discovery, `PUPPETEER_EXECUTABLE_PATH` is accepted as a fallback, and `PI_BROWSER_CHROME_USER_DATA_DIR` overrides the default dedicated profile at `/tmp/chrome-pi-debug`.
 

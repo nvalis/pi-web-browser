@@ -45,7 +45,6 @@ const ACTION_WAIT_MS = 3500;
 const DOM_QUIET_MS = 500;
 const INPUT_QUIET_MS = 500;
 const DOWNLOAD_WAIT_MS = 30000;
-const VIEWPORT = { width: 1280, height: 900 };
 const AUTO_LAUNCH_TIMEOUT_MS = 15000;
 const GOOGLE_CAPTCHA_POLL_MS = 750;
 const GOOGLE_CAPTCHA_WAIT_MS = Math.max(
@@ -99,7 +98,7 @@ function launchWindowsChrome(): void {
     ")",
     "$chrome = $paths | Where-Object { $_ -and (Test-Path $_) } | Select-Object -First 1",
     "if (-not $chrome) { throw 'Google Chrome executable was not found' }",
-    `$arguments = @('--remote-debugging-port=${CHROME_PORT}', '--remote-debugging-address=0.0.0.0', '--no-first-run', '--no-default-browser-check', '--disable-background-networking', '--disable-default-apps', '--disable-extensions', '--disable-sync', '--disable-translate', \"--user-data-dir=$env:TEMP\\chrome-pi-debug\", '--window-size=1280,900', '--new-window', 'about:blank')`,
+    `$arguments = @('--remote-debugging-port=${CHROME_PORT}', '--remote-debugging-address=0.0.0.0', '--no-first-run', '--no-default-browser-check', '--disable-background-networking', '--disable-default-apps', '--disable-extensions', '--disable-sync', '--disable-translate', \"--user-data-dir=$env:TEMP\\chrome-pi-debug\", '--start-maximized', '--new-window', 'about:blank')`,
     "Start-Process -FilePath $chrome -ArgumentList $arguments",
   ].join("; ");
   execFileSync("powershell.exe", ["-NoProfile", "-NonInteractive", "-Command", script], {
@@ -134,7 +133,7 @@ export function nativeLinuxChromeArguments(port: string, userDataDirectory: stri
     "--disable-sync",
     "--disable-translate",
     `--user-data-dir=${userDataDirectory}`,
-    "--window-size=1280,900",
+    "--start-maximized",
     "--new-window",
     "about:blank",
   ];
@@ -179,6 +178,12 @@ async function probeDebuggerEndpoint(host: string): Promise<{ endpoint: string; 
     endpoint,
     wsUrl: info.webSocketDebuggerUrl.replace(/127\.0\.0\.1|localhost/, host),
   };
+}
+
+export function browserConnectOptions(browserWSEndpoint: string) {
+  // Puppeteer's default 800×600 viewport emulates a small page inside the
+  // visible Chrome window. Null keeps Chrome's native, window-filling viewport.
+  return { browserWSEndpoint, defaultViewport: null };
 }
 
 async function findDebuggerEndpoint(timeoutMs: number): Promise<{ endpoint: string; wsUrl: string }> {
@@ -452,7 +457,7 @@ export default function webBrowserExtension(pi: ExtensionAPI) {
             );
           }
         }
-        const connected = await puppeteer.connect({ browserWSEndpoint: debuggerEndpoint.wsUrl });
+        const connected = await puppeteer.connect(browserConnectOptions(debuggerEndpoint.wsUrl));
         browser = connected;
         popupTrackingError = undefined;
         connected.on("targetcreated", (target) => {
@@ -512,7 +517,6 @@ export default function webBrowserExtension(pi: ExtensionAPI) {
     return browserQueue.run(async () => {
       throwIfAborted(signal);
       const page = await connected.newPage();
-      await page.setViewport(VIEWPORT);
       const tab = await registerPage(page);
       if (makeActive) activeTabId = tab.id;
       return tab;

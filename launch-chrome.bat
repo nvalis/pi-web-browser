@@ -25,4 +25,4 @@ echo.
   --disable-sync ^
   --disable-translate ^
   --user-data-dir=%USER_DATA% ^
-  --window-size=1280,900
+  --start-maximized
